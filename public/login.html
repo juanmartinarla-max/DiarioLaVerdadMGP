@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - La Verdad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="encabezado encabezado-simple">
+        <div class="zona-logo">
+            <a href="index.html" class="logo-imagen"><img src="/logo.png" alt="La Verdad"></a>
+            <p>GENERAL PUEYRREDÓN</p>
+            <p class="fecha-diario-simple" id="fecha-diario"></p>
+        </div>
+    </header>
+
+    <main class="contenedor-formulario">
+        <div class="formulario-caja">
+            <h1>Iniciar sesión</h1>
+            <form action="/login" method="POST">
+                <label for="nombre_usuario">Nombre de usuario</label>
+                <input type="text" id="nombre_usuario" name="nombre_usuario" maxlength="50" autocomplete="username" required>
+
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+                <button type="submit">INICIAR SESIÓN</button>
+            </form>
+            <p class="texto-formulario">¿No tenés una cuenta? <a href="registro.html">Registrate</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-lado footer-identidad">
+            <strong>LA VERDAD DE GRAL. PUEYRREDÓN</strong>
+            <span>Redacción: Calle Rivadavia 2333, 3° piso, Of. 351</span>
+            <span>Mar del Plata, Provincia de Buenos Aires - C.P.7600</span>
+            <span>Tel: 2235896020</span>
+            <span>E-mail: diariolaverdad@live.com</span>
+        </div>
+        <div class="footer-lado footer-contacto">
+            <strong>Director Propietario: Carlos Luis Fontanini</strong>
+            <span>Horario: 9:30 a 18:00 hs.</span>
+            <span>Distribución Gratuita</span>
+        </div>
+    </footer>
+
+    <script src="fecha.js"></script>
+</body>
+</html>

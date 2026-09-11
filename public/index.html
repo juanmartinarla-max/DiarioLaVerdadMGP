@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Verdad - General Pueyrredón</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="encabezado">
+        <div class="barra-superior">
+            <span class="fecha" id="fecha-diario"></span>
+            <div class="usuario" id="zona-usuario">
+                <a href="registro.html" class="btn-registrarme">REGISTRARME</a>
+                <a href="login.html" class="btn-login">INICIAR SESIÓN</a>
+            </div>
+        </div>
+
+        <div class="zona-logo">
+            <a href="index.html" class="logo-imagen"><img src="/logo.png" alt="La Verdad"></a>
+            <p>GENERAL PUEYRREDÓN</p>
+        </div>
+
+        <nav class="selector-publicaciones" aria-label="Tipo de publicaciones">
+            <input type="radio" id="seleccion-noticias" name="tipo-publicacion" value="noticia" checked>
+            <label for="seleccion-noticias">NOTICIAS</label>
+
+            <input type="radio" id="seleccion-edictos" name="tipo-publicacion" value="edicto">
+            <label for="seleccion-edictos">EDICTOS</label>
+        </nav>
+
+        <div class="zona-diario-hoy">
+            <a href="/api/diario/hoy/descargar" class="boton-diario" id="boton-diario">DESCARGAR DIARIO DE HOY</a>
+            <span id="mensaje-diario" class="mensaje-diario"></span>
+        </div>
+    </header>
+
+    <main class="contenedor-principal">
+        <p id="mensaje-carga" class="mensaje-carga">Cargando publicaciones...</p>
+        <section class="grilla-noticias" id="grilla-articulos"></section>
+    </main>
+
+    <footer>
+        <div class="footer-lado footer-identidad">
+            <strong>LA VERDAD DE GRAL. PUEYRREDÓN</strong>
+            <span>Redacción: Calle Rivadavia 2333, 3° piso, Of. 351</span>
+            <span>Mar del Plata, Provincia de Buenos Aires - C.P.7600</span>
+            <span>Tel: 2235896020</span>
+            <span>E-mail: diariolaverdad@live.com</span>
+        </div>
+        <div class="footer-lado footer-contacto">
+            <strong>Director Propietario: Carlos Luis Fontanini</strong>
+            <span>Horario: 9:30 a 18:00 hs.</span>
+            <span>Distribución Gratuita</span>
+        </div>
+    </footer>
+
+    <script src="fecha.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

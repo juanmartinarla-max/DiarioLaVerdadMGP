@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Verdad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="encabezado encabezado-noticia">
+        <div class="barra-superior">
+            <span class="fecha" id="fecha-diario"></span>
+            <div class="usuario" id="zona-usuario">
+                <a href="registro.html" class="btn-registrarme">REGISTRARME</a>
+                <a href="login.html" class="btn-login">INICIAR SESIÓN</a>
+            </div>
+        </div>
+
+        <div class="zona-logo">
+            <a href="index.html" class="logo-imagen"><img src="/logo.png" alt="La Verdad"></a>
+            <p>GENERAL PUEYRREDÓN</p>
+        </div>
+
+        <nav class="selector-publicaciones">
+            <a href="index.html" class="enlace-selector">NOTICIAS</a>
+            <a href="index.html" class="enlace-selector">EDICTOS</a>
+        </nav>
+    </header>
+
+    <main class="contenedor-noticia">
+        <article class="noticia-completa" id="articulo-completo">
+            <p class="mensaje-carga">Cargando publicación...</p>
+        </article>
+    </main>
+
+    <footer>
+        <div class="footer-lado footer-identidad">
+            <strong>LA VERDAD DE GRAL. PUEYRREDÓN</strong>
+            <span>Redacción: Calle Rivadavia 2333, 3° piso, Of. 351</span>
+            <span>Mar del Plata, Provincia de Buenos Aires - C.P.7600</span>
+            <span>Tel: 2235896020</span>
+            <span>E-mail: diariolaverdad@live.com</span>
+        </div>
+        <div class="footer-lado footer-contacto">
+            <strong>Director Propietario: Carlos Luis Fontanini</strong>
+            <span>Horario: 9:30 a 18:00 hs.</span>
+            <span>Distribución Gratuita</span>
+        </div>
+    </footer>
+
+    <script src="fecha.js"></script>
+    <script src="noticia.js"></script>
+</body>
+</html>

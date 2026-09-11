@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración - La Verdad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="encabezado encabezado-admin">
+        <div class="barra-superior">
+            <span class="fecha">Panel de administración</span>
+            <div class="usuario">
+                <a href="index.html" class="btn-login">VOLVER AL DIARIO</a>
+                <a href="/logout" class="btn-registrarme">CERRAR SESIÓN</a>
+            </div>
+        </div>
+
+        <div class="zona-logo">
+            <a href="index.html" class="logo-imagen"><img src="/logo.png" alt="La Verdad"></a>
+            <p>GENERAL PUEYRREDÓN</p>
+        </div>
+    </header>
+
+    <main class="contenedor-admin">
+        <div class="cabecera-admin">
+            <div>
+                <h1>Panel de administración</h1>
+                <p>Administrá las noticias y los edictos del diario.</p>
+            </div>
+        </div>
+
+        <section class="formulario-admin">
+            <h2>Agregar publicación</h2>
+
+            <form id="form-articulo" enctype="multipart/form-data">
+                <label for="tipo">Tipo de publicación</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="noticia">Noticia</option>
+                    <option value="edicto">Edicto</option>
+                </select>
+
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" maxlength="255" required>
+
+                <div id="campo-subtitulo">
+                    <label for="subtitulo">Subtítulo</label>
+                    <textarea id="subtitulo" name="subtitulo" rows="3" maxlength="500"></textarea>
+                </div>
+
+                <div id="campo-imagen">
+                    <label for="imagen">Imagen</label>
+                    <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png,image/webp">
+                    <small>Obligatoria para una noticia. Máximo 5 MB.</small>
+                </div>
+
+                <div id="campo-contenido">
+                    <label for="contenido">Contenido</label>
+                    <textarea id="contenido" name="contenido" rows="12"></textarea>
+                </div>
+
+                <div id="campo-dias">
+                    <label for="dias">Días</label>
+                    <input type="number" id="dias" name="dias" min="0" step="1" value="0">
+                    <small>Indica cuántos días debe permanecer activo el edicto. El número no será público.</small>
+                </div>
+
+                <button type="submit" class="boton-agregar">+ PUBLICAR</button>
+                <p id="mensaje-formulario" class="mensaje-admin"></p>
+            </form>
+        </section>
+
+        <section class="lista-admin">
+            <h2>Publicaciones existentes</h2>
+            <div id="lista-articulos">
+                <p class="mensaje-carga">Cargando publicaciones...</p>
+            </div>
+        </section>
+
+        <section class="formulario-admin formulario-diario">
+            <h2>Diario de hoy</h2>
+            <p>Subí manualmente el PDF del diario correspondiente a la fecha de hoy.</p>
+            <form id="form-diario" enctype="multipart/form-data">
+                <label for="diario-pdf">Archivo PDF</label>
+                <input type="file" id="diario-pdf" name="diario" accept="application/pdf" required>
+                <small>El archivo se asociará a la fecha de hoy. Máximo 20 MB.</small>
+                <button type="submit" class="boton-agregar">+ SUBIR DIARIO DE HOY</button>
+                <p id="mensaje-diario-admin" class="mensaje-admin"></p>
+            </form>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
