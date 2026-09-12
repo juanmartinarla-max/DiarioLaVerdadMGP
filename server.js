@@ -386,6 +386,59 @@ app.get("/api/diario/hoy/descargar", async (req, res) => {
     }
 });
 
+// Público: devuelve todos los diarios anteriores disponibles.
+app.get("/api/diarios", async (req, res) => {
+    try {
+        const [diarios] = await pool.execute(`
+            SELECT id, fecha
+            FROM diarios
+            ORDER BY fecha DESC
+        `);
+
+        res.json(diarios);
+    } catch (error) {
+        console.error("Error obteniendo diarios anteriores:", error);
+        res.status(500).json({ error: "No se pudieron obtener los diarios anteriores." });
+    }
+});
+
+// Público: descarga un diario por su ID.
+app.get("/api/diario/:id/descargar", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).send("ID de diario inválido.");
+        }
+
+        const [diarios] = await pool.execute(`
+            SELECT fecha, archivo
+            FROM diarios
+            WHERE id = ?
+            LIMIT 1
+        `, [id]);
+
+        if (diarios.length === 0) {
+            return res.status(404).send("El diario solicitado no existe.");
+        }
+
+        const diario = diarios[0];
+        const nombreArchivo = path.basename(diario.archivo);
+        const ruta = path.join(uploadsDir, nombreArchivo);
+
+        if (!fs.existsSync(ruta)) {
+            return res.status(404).send("El archivo del diario no está disponible.");
+        }
+
+        const fecha = new Date(diario.fecha);
+        const fechaTexto = fecha.toISOString().slice(0, 10);
+        res.download(ruta, `Diario-La-Verdad-${fechaTexto}.pdf`);
+    } catch (error) {
+        console.error("Error descargando diario anterior:", error);
+        res.status(500).send("No se pudo descargar el diario.");
+    }
+});
+
 // Solo administradores pueden subir/reemplazar el diario de hoy.
 app.post("/api/diario", requiereAdmin, (req, res) => {
     uploadPDF.single("diario")(req, res, async (error) => {
