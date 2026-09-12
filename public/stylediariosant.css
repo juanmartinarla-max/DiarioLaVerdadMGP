@@ -1,0 +1,102 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+}
+
+.encabezado-diarios {
+    background: #fff;
+    border-bottom: 3px solid #1674d1;
+    padding: 20px;
+    text-align: center;
+}
+
+.encabezado-diarios h1 {
+    margin: 15px 0 5px;
+    font-size: 30px;
+}
+
+.encabezado-diarios p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.volver {
+    display: inline-block;
+    color: #1674d1;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.volver:hover { text-decoration: underline; }
+
+.contenedor-diarios {
+    width: min(900px, 92%);
+    margin: 30px auto;
+    min-height: 55vh;
+}
+
+.lista-diarios {
+    display: grid;
+    gap: 15px;
+}
+
+.diario {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-left: 5px solid #1674d1;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+.diario-fecha {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.boton-descargar {
+    display: inline-block;
+    background: #1674d1;
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.boton-descargar:hover { background: #0d5da9; }
+
+.mensaje {
+    text-align: center;
+    font-weight: bold;
+}
+
+footer {
+    background: #222;
+    color: white;
+    padding: 25px 5%;
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+footer div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+@media (max-width: 600px) {
+    .encabezado-diarios h1 { font-size: 24px; }
+    .diario { flex-direction: column; align-items: flex-start; }
+    .boton-descargar { width: 100%; text-align: center; }
+    footer { flex-direction: column; }
+}

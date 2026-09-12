@@ -8,7 +8,7 @@ function mostrarFechaActual() {
         day: "numeric",
         month: "long",
         year: "numeric"
-    });
+    }).toUpperCase();
 }
 
 mostrarFechaActual();
