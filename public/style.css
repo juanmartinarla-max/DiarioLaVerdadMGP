@@ -199,7 +199,7 @@ img {
 
 .logo-imagen img {
     /* EDITAR ACÁ EL TAMAÑO DE LA IMAGEN DEL LOGO */
-    width: 360px;
+    width: 200px;
     max-width: 80vw;
     height: auto;
     display: block;
