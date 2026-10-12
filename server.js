@@ -439,12 +439,28 @@ app.get("/api/diario/:id/descargar", async (req, res) => {
     }
 });
 
-// Solo administradores pueden subir/reemplazar el diario de hoy.
+// Administradores: lista de diarios para poder gestionarlos desde el panel.
+app.get("/api/admin/diarios", requiereAdmin, async (req, res) => {
+    try {
+        const [diarios] = await pool.execute(`
+            SELECT id, fecha
+            FROM diarios
+            ORDER BY fecha DESC, id DESC
+        `);
+        res.json(diarios);
+    } catch (error) {
+        console.error("Error obteniendo diarios para administración:", error);
+        res.status(500).json({ error: "No se pudieron obtener los diarios." });
+    }
+});
+
+// Solo administradores pueden subir/reemplazar un diario para una fecha elegida.
 app.post("/api/diario", requiereAdmin, (req, res) => {
     uploadPDF.single("diario")(req, res, async (error) => {
+        let archivoGuardado = req.file?.path;
         try {
             if (error) {
-                if (req.file) fs.unlinkSync(req.file.path);
+                if (archivoGuardado && fs.existsSync(archivoGuardado)) fs.unlinkSync(archivoGuardado);
                 return res.status(400).json({ error: error.message });
             }
 
@@ -452,13 +468,21 @@ app.post("/api/diario", requiereAdmin, (req, res) => {
                 return res.status(400).json({ error: "Tenés que seleccionar un archivo PDF." });
             }
 
-            const [existentes] = await pool.execute(`
-                SELECT id, archivo
-                FROM diarios
-                WHERE fecha = CURDATE()
-                LIMIT 1
-            `);
+            const fecha = String(req.body.fecha || "").trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+                fs.unlinkSync(archivoGuardado);
+                return res.status(400).json({ error: "Seleccioná una fecha válida para el diario." });
+            }
+            const fechaComprobada = new Date(`${fecha}T00:00:00Z`);
+            if (Number.isNaN(fechaComprobada.getTime()) || fechaComprobada.toISOString().slice(0, 10) !== fecha) {
+                fs.unlinkSync(archivoGuardado);
+                return res.status(400).json({ error: "La fecha seleccionada no es válida." });
+            }
 
+            const [existentes] = await pool.execute(
+                "SELECT id, archivo FROM diarios WHERE fecha = ? LIMIT 1",
+                [fecha]
+            );
             const archivo = req.file.filename;
 
             if (existentes.length > 0) {
@@ -466,23 +490,59 @@ app.post("/api/diario", requiereAdmin, (req, res) => {
                     "UPDATE diarios SET archivo = ? WHERE id = ?",
                     [archivo, existentes[0].id]
                 );
-
                 const archivoAnterior = path.join(uploadsDir, path.basename(existentes[0].archivo));
-                if (fs.existsSync(archivoAnterior)) fs.unlinkSync(archivoAnterior);
+                if (fs.existsSync(archivoAnterior) && archivoAnterior !== archivoGuardado) {
+                    fs.unlinkSync(archivoAnterior);
+                }
             } else {
                 await pool.execute(
-                    "INSERT INTO diarios (fecha, archivo) VALUES (CURDATE(), ?)",
-                    [archivo]
+                    "INSERT INTO diarios (fecha, archivo) VALUES (?, ?)",
+                    [fecha, archivo]
                 );
             }
 
-            res.status(201).json({ mensaje: "Diario de hoy subido correctamente." });
+            res.status(201).json({ mensaje: `Diario del ${fecha} subido correctamente.` });
         } catch (errorInterno) {
             console.error("Error subiendo diario:", errorInterno);
-            if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+            if (archivoGuardado && fs.existsSync(archivoGuardado)) fs.unlinkSync(archivoGuardado);
             res.status(500).json({ error: "Error interno del servidor." });
         }
     });
+});
+
+// Solo administradores pueden eliminar un diario y su PDF.
+app.delete("/api/diarios/:id", requiereAdmin, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ error: "ID de diario inválido." });
+        }
+
+        const [diarios] = await pool.execute(
+            "SELECT archivo FROM diarios WHERE id = ? LIMIT 1",
+            [id]
+        );
+        if (diarios.length === 0) {
+            return res.status(404).json({ error: "El diario no existe." });
+        }
+
+        await pool.execute("DELETE FROM diarios WHERE id = ?", [id]);
+
+        const rutaArchivo = path.join(uploadsDir, path.basename(diarios[0].archivo));
+        if (fs.existsSync(rutaArchivo)) {
+            try {
+                fs.unlinkSync(rutaArchivo);
+            } catch (errorArchivo) {
+                // La fila ya se eliminó; registramos el error para poder limpiar el archivo manualmente.
+                console.error("No se pudo eliminar el PDF del diario:", errorArchivo);
+            }
+        }
+
+        res.json({ mensaje: "Diario eliminado correctamente." });
+    } catch (error) {
+        console.error("Error eliminando diario:", error);
+        res.status(500).json({ error: "No se pudo eliminar el diario." });
+    }
 });
 
 // Solo administradores pueden eliminar.

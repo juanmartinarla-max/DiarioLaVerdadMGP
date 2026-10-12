@@ -12,6 +12,8 @@ const mensajeFormulario = document.getElementById("mensaje-formulario");
 const listaArticulos = document.getElementById("lista-articulos");
 const formularioDiario = document.getElementById("form-diario");
 const diarioPdf = document.getElementById("diario-pdf");
+const fechaDiario = document.getElementById("fecha-diario");
+const listaDiariosAdmin = document.getElementById("lista-diarios-admin");
 const mensajeDiarioAdmin = document.getElementById("mensaje-diario-admin");
 
 function escaparHTML(texto) {
@@ -180,8 +182,14 @@ formularioDiario.addEventListener("submit", async event => {
             return;
         }
 
+        if (!fechaDiario.value) {
+            mensajeDiarioAdmin.textContent = "Seleccioná la fecha del diario.";
+            return;
+        }
+
         const datos = new FormData();
         datos.append("diario", archivo);
+        datos.append("fecha", fechaDiario.value);
 
         const respuesta = await fetch("/api/diario", { method: "POST", body: datos });
         const resultado = await respuesta.json();
@@ -191,14 +199,80 @@ formularioDiario.addEventListener("submit", async event => {
             return;
         }
 
-        mensajeDiarioAdmin.textContent = "Diario de hoy subido correctamente.";
+        mensajeDiarioAdmin.textContent = resultado.mensaje || "Diario subido correctamente.";
         formularioDiario.reset();
+        fechaDiario.value = new Date().toLocaleDateString("en-CA");
+        cargarDiarios();
     } catch (error) {
         console.error(error);
         mensajeDiarioAdmin.textContent = "No se pudo conectar con el servidor.";
     }
 });
 
+function formatearFechaDiario(fecha) {
+    // MySQL DATE suele llegar como YYYY-MM-DD; se formatea sin desfase horario.
+    const partes = String(fecha).slice(0, 10).split("-");
+    if (partes.length !== 3) return String(fecha);
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+async function cargarDiarios() {
+    try {
+        const respuesta = await fetch("/api/admin/diarios");
+        if (!respuesta.ok) throw new Error("No se pudieron cargar los diarios.");
+        const diarios = await respuesta.json();
+        listaDiariosAdmin.innerHTML = "";
+
+        if (diarios.length === 0) {
+            listaDiariosAdmin.innerHTML = "<p>No hay diarios cargados.</p>";
+            return;
+        }
+
+        diarios.forEach(diario => {
+            const fila = document.createElement("article");
+            fila.className = "fila-admin";
+            fila.innerHTML = `
+                <div class="info-fila-admin">
+                    <h3>Diario del ${escaparHTML(formatearFechaDiario(diario.fecha))}</h3>
+                </div>
+                <div class="acciones-admin">
+                    <a href="/api/diario/${diario.id}/descargar" target="_blank" rel="noopener">VER / DESCARGAR</a>
+                    <button type="button" class="boton-eliminar boton-eliminar-diario" data-id="${diario.id}">ELIMINAR</button>
+                </div>
+            `;
+            listaDiariosAdmin.appendChild(fila);
+        });
+
+        listaDiariosAdmin.querySelectorAll(".boton-eliminar-diario").forEach(boton => {
+            boton.addEventListener("click", eliminarDiario);
+        });
+    } catch (error) {
+        console.error(error);
+        listaDiariosAdmin.innerHTML = "<p>No se pudieron cargar los diarios.</p>";
+    }
+}
+
+async function eliminarDiario(evento) {
+    const id = evento.currentTarget.dataset.id;
+    if (!confirm("¿Seguro que querés eliminar este diario? También se eliminará su archivo PDF.")) return;
+
+    try {
+        const respuesta = await fetch(`/api/diarios/${id}`, { method: "DELETE" });
+        const resultado = await respuesta.json();
+        if (!respuesta.ok) {
+            alert(resultado.error || "No se pudo eliminar el diario.");
+            return;
+        }
+        await cargarDiarios();
+        mensajeDiarioAdmin.textContent = resultado.mensaje || "Diario eliminado correctamente.";
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo conectar con el servidor.");
+    }
+}
+
 tipo.addEventListener("change", actualizarCampos);
 actualizarCampos();
+fechaDiario.value = new Date().toLocaleDateString("en-CA");
 cargarArticulos();
+cargarDiarios();
